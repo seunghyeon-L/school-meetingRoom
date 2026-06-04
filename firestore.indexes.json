@@ -1,0 +1,14 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "reservations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "roomId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "ASCENDING" },
+        { "fieldPath": "startSlot", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

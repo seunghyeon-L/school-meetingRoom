@@ -1,0 +1,92 @@
+:root {
+  /* ============================================================
+     HP 디자인 토큰 (DESIGN-hp.md 기반)
+     - 단일 시그널 색: HP Electric Blue (#024ad8) — 한 화면에 최대 2회
+     - 잉크(#1a1a1a) + 흰/구름/안개 면, 다크 네이비 슬래브로 마감
+     ============================================================ */
+
+  /* ── 브랜드 / 액센트 ── */
+  --color-primary: #024ad8; /* HP Electric Blue: 유일한 CTA·링크·셰브론 */
+  --color-primary-dark: #0e3191; /* primary-deep: 눌림/방문 링크 */
+  --color-primary-bright: #296ef9; /* 다크 슬래브 위에서 쓰는 밝은 파랑 */
+  --color-primary-soft: #c9e0fc; /* 선택 칩 / 옅은 파랑 면 */
+  --color-primary-light: #eaf2fe; /* 호버·활성 옅은 틴트(온브랜드 커스텀) */
+
+  --color-danger: #b3262b; /* bloom-deep: 에러/삭제 */
+  --color-danger-light: #f9d4d2; /* bloom-rose */
+  --color-success: #1e7a46; /* '내 예약' 구분용 그린(유지) */
+  --color-accent-coral: #ff5050; /* bloom-coral: 강조/오늘 */
+
+  /* ── 텍스트(잉크) ── */
+  --color-text: #1a1a1a; /* ink: 헤드라인·본문·버튼 */
+  --color-text-muted: #3d3d3d; /* charcoal: 보조 설명 */
+  --color-text-faint: #636363; /* graphite: 잔글씨/메타 */
+
+  /* ── 면(Surface) — 6가지 면 모드가 전체 어휘 ── */
+  --color-bg: #f7f7f7; /* cloud: 페이지 바탕(흰 카드를 띄움) */
+  --color-surface: #ffffff; /* canvas/paper: 카드 */
+  --color-cloud: #f7f7f7;
+  --color-fog: #e8e8e8;
+  --color-ink: #1a1a1a; /* 다크 네이비 슬래브 */
+  --color-ink-soft: #292929;
+  --color-on-ink: #ffffff;
+  --color-border: #e8e8e8; /* hairline */
+  --color-border-strong: #c2c2c2; /* steel */
+
+  /* 달력 예약 블록 폴백(방별 색은 roomColor.ts) */
+  --color-block: #024ad8;
+  --color-block-self: #1e7a46;
+
+  /* ============================================================
+     타이포 — HP 원본 스케일 (본문 16px)
+     Pretendard 우선. 한글/라틴/숫자 일관.
+     ============================================================ */
+  --font-stack: 'Pretendard Variable', Pretendard, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo',
+    'Noto Sans KR', system-ui, sans-serif;
+
+  --font-xs: 12px; /* caption-sm: 각주/법적 고지 */
+  --font-sm: 14px; /* caption-md: 스펙/메타/캡션 */
+  --font-base: 16px; /* body-md: 기본 본문(워크호스) */
+  --font-md: 18px; /* body-lg: 리드 문단 */
+  --font-lg: 20px; /* display-xs: UI 제목 */
+  --font-xl: 24px; /* display-sm: 카드/섹션 제목 */
+  --font-2xl: 32px; /* display-md: 페이지 H1 */
+  --font-3xl: 44px; /* display-lg: 히어로(태블릿) */
+  --font-display: 56px; /* display-xl: 히어로(데스크톱) */
+
+  /* HP: 모든 디스플레이 사이즈를 weight 500로 — 히어로에서도 굵게 키우지 않음 */
+  --weight-display: 500;
+  --weight-emphasis: 600;
+  --tracking-button: 0.7px;
+
+  /* ============================================================
+     모서리 — 2단 구조: 버튼은 날카롭게(4px), 카드는 부드럽게(16px)
+     ============================================================ */
+  --radius: 16px; /* 카드/패널/모달/사진 프레임 (rounded.xl) */
+  --radius-card: 16px;
+  --radius-md: 8px; /* 뱃지/아이콘 카드/FAQ (rounded.lg) */
+  --radius-sm: 4px; /* 버튼/입력/셀 (rounded.md) */
+  --radius-pill: 9999px;
+
+  /* ============================================================
+     간격 — 8px 기준, 섹션 리듬 80px
+     ============================================================ */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-section: 80px;
+
+  /* ── 입체감 ── */
+  --shadow: 0 2px 8px rgba(26, 26, 26, 0.08); /* Soft Lift: 카드 전용 */
+  --shadow-modal: 0 8px 24px rgba(26, 26, 26, 0.12); /* 모달/드로어 */
+
+  /* ── 크기 ── */
+  --tap-min: 44px; /* HP 터치 타깃(44×44) */
+  --content-max: 1680px; /* 데스크톱 콘텐츠 최대폭 — 풀블리드에 가깝게 넓힘 */
+  --page-gutter: 16px; /* 좌우 사이드 여백(작게) — 여기 한 곳에서 조절 */
+  --maxw: 1366px; /* 레거시 참조 호환 */
+}
