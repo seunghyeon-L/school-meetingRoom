@@ -18,6 +18,13 @@ service cloud.firestore {
       return value is string && value.size() > 0;
     }
 
+    function validMemo(data) {
+      return isNonEmptyString(data.text)
+        && data.text.size() <= 500
+        && isNonEmptyString(data.authorId)
+        && isNonEmptyString(data.authorName);
+    }
+
     function validReservation(data) {
       return data.startSlot is int
         && data.endSlot is int
@@ -61,6 +68,15 @@ service cloud.firestore {
         && validReservation(request.resource.data)
         && request.resource.data.createdByUid == resource.data.createdByUid;
 
+      allow delete: if isSignedIn();
+    }
+
+    // 공유 메모(조교): 인증된 사용자라면 읽기/작성/삭제 가능(소규모 신뢰 그룹).
+    // 메모는 수정 불가(작성/삭제만) — 목록형으로 충돌 없이 쌓는다.
+    match /memos/{memoId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && validMemo(request.resource.data);
+      allow update: if false;
       allow delete: if isSignedIn();
     }
   }

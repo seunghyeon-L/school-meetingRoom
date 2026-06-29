@@ -997,8 +997,8 @@ a {
 /* 2단 레이아웃: 좌측 월 달력 + 우측 선택일 패널 */
 .home-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: var(--space-md);
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--space-sm);
   align-items: start;
 }
 
@@ -1013,7 +1013,7 @@ a {
   background: var(--color-surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: var(--space-md);
+  padding: var(--space-md) var(--space-sm);
 }
 
 .cal__header {
@@ -1093,8 +1093,10 @@ a {
 .cal__grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  border-top: 1px solid var(--color-border);
-  border-left: 1px solid var(--color-border);
+  /* 위/왼쪽은 그리드가, 오른쪽/아래 외곽선과 내부 칸선은 셀이 그린다.
+     모두 같은 색(steel)이고 겹치지 않아 1px 단일선으로 보인다(이중선 방지). */
+  border-top: 1px solid var(--color-border-strong);
+  border-left: 1px solid var(--color-border-strong);
 }
 
 .cal__cell {
@@ -1108,8 +1110,10 @@ a {
   padding: 8px 5px 10px;
   text-align: left;
   background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
+  /* 칸은 <button> 이라 브라우저 기본 테두리(outset)가 위/왼쪽에 남는다 → 먼저 제거 */
+  border: 0;
+  border-right: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
   cursor: pointer;
   font-family: inherit;
 }
@@ -1183,15 +1187,15 @@ a {
 
 /* 1줄: [방] 시간 */
 .cal__chip-line--head {
-  font-size: 12.5px;
-  line-height: 1.4;
+  font-size: 15.5px;
+  line-height: 1.45;
   font-weight: 700;
 }
 
 /* 2줄: 예약자 · 목적 */
 .cal__chip-line--sub {
-  font-size: 12.5px;
-  line-height: 1.4;
+  font-size: 15.5px;
+  line-height: 1.45;
   font-weight: 500;
   opacity: 0.9;
 }
@@ -1201,6 +1205,79 @@ a {
   font-weight: 700;
   color: var(--color-text-muted);
   padding-left: 4px;
+}
+
+/* 톱내비 우측: 신분 + 이름 바꾸기 (검정 유틸바 제거 후 이리로 이동) */
+.topnav__spacer {
+  flex: 1;
+}
+
+.topnav__user {
+  font-weight: var(--weight-emphasis);
+  white-space: nowrap;
+  color: var(--color-text);
+  font-size: var(--font-sm);
+}
+
+.topnav__namebtn {
+  min-height: 36px;
+  padding: 0 10px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.topnav__namebtn:hover {
+  background: var(--color-primary-light);
+}
+
+/* 달력 보기 토글 (한 달 / 2주) */
+.cal__viewtoggle {
+  display: inline-flex;
+  margin-left: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.cal__viewtoggle button {
+  padding: 6px 12px;
+  background: var(--color-surface);
+  border: none;
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.cal__viewtoggle button + button {
+  border-left: 1px solid var(--color-border);
+}
+
+.cal__viewtoggle button.is-active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* 2주 보기: 행이 2개뿐 → 칸을 키우고 글자도 키워 한눈에 보이게 */
+.cal--biweek .cal__cell {
+  min-height: 168px;
+}
+
+.cal--biweek .cal__chip {
+  padding: 5px 8px;
+}
+
+.cal--biweek .cal__chip-line--head,
+.cal--biweek .cal__chip-line--sub {
+  font-size: 16.5px;
+  line-height: 1.5;
 }
 
 /* 큰 커스텀 날짜 선택기 (예약 창 안에서 인라인으로 펼쳐지는 달력) */
@@ -1597,10 +1674,8 @@ button.dtcell:hover {
   color: #fff;
 }
 
-/* 선택일 패널 */
+/* 선택일 패널 (sticky 는 상위 .home-layout__panel 로 이동) */
 .daypanel {
-  position: sticky;
-  top: calc(36px + 64px + var(--space-md)); /* 유틸바 + 톱내비 높이 보정 */
   background: var(--color-surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -1687,4 +1762,157 @@ button.dtcell:hover {
   font-size: var(--font-sm);
   color: var(--color-text-muted);
   padding: 2px 0 4px;
+}
+
+/* 우측 사이드바: 선택일 패널 + 공유 메모를 묶어 통째로 sticky */
+.home-layout__panel {
+  position: sticky;
+  top: calc(64px + var(--space-md)); /* 톱내비 높이 보정 (검정 유틸바 제거됨) */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+@media (max-width: 860px) {
+  .home-layout__panel {
+    position: static;
+  }
+}
+
+/* 공유 메모(조교) */
+.memo {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-md);
+}
+
+.memo__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+.memo__title {
+  margin: 0;
+  font-size: var(--font-base);
+  font-weight: 700;
+}
+
+.memo__badge {
+  margin-left: auto;
+  font-size: var(--font-sm);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.memo__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+.memo__input {
+  width: 100%;
+  min-height: 48px;
+  resize: vertical;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: var(--font-base);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.memo__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.memo__form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.memo__count {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+}
+
+.memo__form-row .big-btn {
+  margin-left: auto;
+}
+
+.memo__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 42vh;
+  overflow-y: auto;
+}
+
+.memo__item {
+  background: #f7fafc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.memo__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.memo__author {
+  font-weight: 700;
+  font-size: var(--font-sm);
+}
+
+.memo__time {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+}
+
+.memo__del {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  line-height: 1;
+  font-size: var(--font-base);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.memo__del:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.memo__text {
+  margin: 0;
+  font-size: var(--font-base);
+  color: var(--color-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.memo__empty {
+  margin: 0;
+  padding: 2px 0;
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
 }

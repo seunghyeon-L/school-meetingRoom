@@ -1,31 +1,24 @@
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-  type Unsubscribe,
-} from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { pb } from '../pb/client';
 import type { User } from '../types/models';
 
-const usersCol = collection(db, 'users');
-
-/** 활성 사용자(명단)를 order 순으로 구독 */
+/** 활성 조교 명단을 order 순으로 구독한다(변경 시 자동 갱신). */
 export function subscribeUsers(
   onData: (users: User[]) => void,
   onError: (err: Error) => void,
-): Unsubscribe {
-  const q = query(usersCol, where('active', '==', true), orderBy('order', 'asc'));
-  return onSnapshot(
-    q,
-    (snap) => {
-      const users: User[] = snap.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as Omit<User, 'id'>),
-      }));
-      onData(users);
-    },
-    (err) => onError(err),
-  );
+): () => void {
+  const load = () => {
+    // 조교 명단은 'assistants' 컬렉션 (PocketBase 기본 'users' 와 구분하려고 이름을 다르게 씀)
+    pb.collection('assistants')
+      .getFullList<User>({ filter: 'active = true', sort: 'order' })
+      .then(onData)
+      .catch(onError);
+  };
+
+  load();
+
+  const unsub = pb.collection('assistants').subscribe('*', () => load());
+
+  return () => {
+    unsub.then((fn) => fn()).catch(() => {});
+  };
 }

@@ -1,35 +1,22 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
-import { ensureAnonAuth, subscribeAuth } from '../firebase/anonAuth';
+import { createContext, useContext, type ReactNode } from 'react';
 
 interface AuthState {
-  uid: string | null;
   ready: boolean;
 }
 
-const AuthContext = createContext<AuthState>({ uid: null, ready: false });
+const AuthContext = createContext<AuthState>({ ready: true });
 
+/**
+ * PocketBase 로 옮기면서 별도의 익명 로그인이 필요 없어졌다.
+ * 신원(누가 쓰는지)은 SessionProvider(이름 선택)가 담당하므로,
+ * 여기서는 앱 게이트 호환을 위해 형태만 유지하고 항상 ready=true 로 둔다.
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({ uid: null, ready: false });
-
-  useEffect(() => {
-    // 먼저 구독하여, 로그인 완료(uid 확보) 시점에만 ready=true 로 전환한다.
-    const unsub = subscribeAuth((uid) => {
-      setState({ uid, ready: true });
-    });
-    // 로그인이 실패해도 앱이 영원히 "준비 중"에 멈추지 않도록 ready 처리(uid 없음).
-    ensureAnonAuth().catch(() => {
-      setState((s) => (s.ready ? s : { uid: null, ready: true }));
-    });
-    return unsub;
-  }, []);
-
-  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ ready: true }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

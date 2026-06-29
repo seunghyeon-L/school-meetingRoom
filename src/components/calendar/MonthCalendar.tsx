@@ -1,18 +1,19 @@
 import { useMemo } from 'react';
 import type { Reservation, Room } from '../../types/models';
 import { colorFor, type RoomColor } from '../../lib/roomColor';
-import {
-  isSameMonth,
-  isToday,
-  monthGridWeeks,
-  monthLabel,
-  sundayIndex,
-} from '../../lib/dateKey';
+import { isSameMonth, isToday, sundayIndex } from '../../lib/dateKey';
 import { WEEKDAY_LABELS_SUN } from '../../lib/constants';
 
+export type CalendarView = 'month' | 'biweek';
+
 interface MonthCalendarProps {
-  /** 표시할 달의 1일 키 */
-  monthAnchor: string;
+  /** 렌더할 날짜들(7의 배수, 평탄화된 배열) */
+  days: string[];
+  /** 헤더 제목 */
+  title: string;
+  view: CalendarView;
+  /** 이 달이 아닌 날짜를 흐리게 (월 보기에서만 전달) */
+  dimMonth?: string;
   byDate: Record<string, Reservation[]>;
   rooms: Room[];
   roomColors: Map<string, RoomColor>;
@@ -20,12 +21,11 @@ interface MonthCalendarProps {
   onSelectDate: (date: string) => void;
   /** 날짜 더블클릭 시 해당 날짜로 예약 추가 */
   onAddOnDate: (date: string) => void;
-  onPrevMonth: () => void;
-  onNextMonth: () => void;
+  onPrev: () => void;
+  onNext: () => void;
   onToday: () => void;
+  onViewChange: (v: CalendarView) => void;
 }
-
-const MAX_CHIPS = 3;
 
 /** '419호' -> '419' (칩 공간 절약용 짧은 방 이름) */
 function shortRoom(name: string): string {
@@ -33,34 +33,74 @@ function shortRoom(name: string): string {
 }
 
 export function MonthCalendar({
-  monthAnchor,
+  days,
+  title,
+  view,
+  dimMonth,
   byDate,
   rooms,
   roomColors,
   selectedDate,
   onSelectDate,
   onAddOnDate,
-  onPrevMonth,
-  onNextMonth,
+  onPrev,
+  onNext,
   onToday,
+  onViewChange,
 }: MonthCalendarProps) {
-  const days = useMemo(() => monthGridWeeks(monthAnchor).flat(), [monthAnchor]);
   const roomName = useMemo(() => {
     const m = new Map<string, string>();
     rooms.forEach((r) => m.set(r.id, r.name));
     return m;
   }, [rooms]);
+  // 방 순서(order) 맵 — 칩을 방 호수 순으로 정렬하기 위함
+  const roomOrder = useMemo(() => {
+    const m = new Map<string, number>();
+    rooms.forEach((r, i) => m.set(r.id, r.order ?? i));
+    return m;
+  }, [rooms]);
+
+  // 2주 보기는 칸이 커서 칩을 더 많이 보여준다
+  const maxChips = view === 'biweek' ? 6 : 3;
+
+  /** 1순위 방 순서, 2순위 시작시간 */
+  const sortByRoom = (list: Reservation[]): Reservation[] =>
+    list
+      .slice()
+      .sort(
+        (a, b) =>
+          (roomOrder.get(a.roomId) ?? 9999) - (roomOrder.get(b.roomId) ?? 9999) ||
+          a.startSlot - b.startSlot,
+      );
 
   return (
-    <div className="cal">
+    <div className={['cal', view === 'biweek' ? 'cal--biweek' : ''].filter(Boolean).join(' ')}>
       <div className="cal__header">
-        <button className="cal__nav" aria-label="이전 달" onClick={onPrevMonth}>
+        <button className="cal__nav" aria-label="이전" onClick={onPrev}>
           ‹
         </button>
-        <span className="cal__title">{monthLabel(monthAnchor)}</span>
-        <button className="cal__nav" aria-label="다음 달" onClick={onNextMonth}>
+        <span className="cal__title">{title}</span>
+        <button className="cal__nav" aria-label="다음" onClick={onNext}>
           ›
         </button>
+
+        <div className="cal__viewtoggle" role="group" aria-label="보기 범위">
+          <button
+            type="button"
+            className={view === 'month' ? 'is-active' : ''}
+            onClick={() => onViewChange('month')}
+          >
+            한 달
+          </button>
+          <button
+            type="button"
+            className={view === 'biweek' ? 'is-active' : ''}
+            onClick={() => onViewChange('biweek')}
+          >
+            2주
+          </button>
+        </div>
+
         <span className="cal__spacer" />
         <button className="cal__today-btn" onClick={onToday}>
           오늘
@@ -87,8 +127,8 @@ export function MonthCalendar({
       <div className="cal__grid">
         {days.map((day) => {
           const dow = sundayIndex(day);
-          const inMonth = isSameMonth(day, monthAnchor);
-          const dayResv = byDate[day] ?? [];
+          const inMonth = dimMonth ? isSameMonth(day, dimMonth) : true;
+          const dayResv = sortByRoom(byDate[day] ?? []);
           const cellCls = [
             'cal__cell',
             !inMonth ? 'cal__cell--other' : '',
@@ -121,7 +161,7 @@ export function MonthCalendar({
             >
               <span className={dateCls}>{Number(day.slice(8, 10))}</span>
               <span className="cal__chips">
-                {dayResv.slice(0, MAX_CHIPS).map((r) => {
+                {dayResv.slice(0, maxChips).map((r) => {
                   const c = colorFor(roomColors, r.roomId);
                   return (
                     <span
@@ -139,8 +179,8 @@ export function MonthCalendar({
                     </span>
                   );
                 })}
-                {dayResv.length > MAX_CHIPS && (
-                  <span className="cal__more">+{dayResv.length - MAX_CHIPS}</span>
+                {dayResv.length > maxChips && (
+                  <span className="cal__more">+{dayResv.length - maxChips}</span>
                 )}
               </span>
             </button>

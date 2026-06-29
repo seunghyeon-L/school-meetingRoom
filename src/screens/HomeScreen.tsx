@@ -2,22 +2,59 @@ import { useMemo, useState } from 'react';
 import { Screen } from '../components/layout/Screen';
 import { Spinner } from '../components/ui/Spinner';
 import { ErrorState } from '../components/ui/EmptyState';
-import { MonthCalendar } from '../components/calendar/MonthCalendar';
+import {
+  MonthCalendar,
+  type CalendarView,
+} from '../components/calendar/MonthCalendar';
 import { DayPanel } from '../components/calendar/DayPanel';
 import { ReservationDialog } from '../components/booking/ReservationDialog';
+import { MemoPanel } from '../components/memo/MemoPanel';
 import { useRooms } from '../hooks/useRooms';
-import { useReservationsByMonth } from '../hooks/useReservationsByMonth';
+import { useReservationsRange } from '../hooks/useReservationsByMonth';
 import { buildRoomColorMap } from '../lib/roomColor';
-import { addMonths, isSameMonth, startOfMonth, todayKey } from '../lib/dateKey';
+import {
+  addDays,
+  addMonths,
+  isSameMonth,
+  monthDayLabel,
+  monthGridWeeks,
+  monthLabel,
+  sundayIndex,
+  todayKey,
+} from '../lib/dateKey';
 import type { Reservation } from '../types/models';
 
 export default function HomeScreen() {
   const today = todayKey();
-  const [monthAnchor, setMonthAnchor] = useState(() => startOfMonth(today));
+  const [view, setView] = useState<CalendarView>('month');
+  /** 포커스 날짜 — 월/2주 범위 계산의 기준 */
+  const [anchor, setAnchor] = useState(today);
   const [selectedDate, setSelectedDate] = useState(today);
 
   const { rooms, loading: roomsLoading, error: roomsError } = useRooms();
-  const { byDate, error: resvError } = useReservationsByMonth(monthAnchor);
+
+  // 보기 모드에 따라 표시할 날짜들 + 데이터 범위 + 제목 계산
+  const { days, rangeStart, rangeEnd, title } = useMemo(() => {
+    if (view === 'biweek') {
+      const start = addDays(anchor, -sundayIndex(anchor)); // 그 주의 일요일
+      const ds = Array.from({ length: 14 }, (_, i) => addDays(start, i));
+      return {
+        days: ds,
+        rangeStart: ds[0],
+        rangeEnd: ds[13],
+        title: `${monthDayLabel(ds[0])} ~ ${monthDayLabel(ds[13])}`,
+      };
+    }
+    const ds = monthGridWeeks(anchor).flat();
+    return {
+      days: ds,
+      rangeStart: ds[0],
+      rangeEnd: ds[ds.length - 1],
+      title: monthLabel(anchor),
+    };
+  }, [view, anchor]);
+
+  const { byDate, error: resvError } = useReservationsRange(rangeStart, rangeEnd);
 
   const roomColors = useMemo(
     () => buildRoomColorMap(rooms.map((r) => r.id)),
@@ -32,12 +69,16 @@ export default function HomeScreen() {
 
   const selectDate = (d: string) => {
     setSelectedDate(d);
-    // 이전/다음 달 날짜를 누르면 그 달로 이동 (갤럭시 달력 동작)
-    if (!isSameMonth(d, monthAnchor)) setMonthAnchor(startOfMonth(d));
+    // 월 보기에서 다른 달 날짜를 누르면 그 달로 이동
+    if (view === 'month' && !isSameMonth(d, anchor)) setAnchor(d);
   };
 
+  const goPrev = () =>
+    setAnchor((a) => (view === 'biweek' ? addDays(a, -14) : addMonths(a, -1)));
+  const goNext = () =>
+    setAnchor((a) => (view === 'biweek' ? addDays(a, 14) : addMonths(a, 1)));
   const goToday = () => {
-    setMonthAnchor(startOfMonth(today));
+    setAnchor(today);
     setSelectedDate(today);
   };
 
@@ -73,16 +114,20 @@ export default function HomeScreen() {
         <div className="home-layout">
           <section className="home-layout__cal">
             <MonthCalendar
-              monthAnchor={monthAnchor}
+              days={days}
+              title={title}
+              view={view}
+              dimMonth={view === 'month' ? anchor : undefined}
               byDate={byDate}
               rooms={rooms}
               roomColors={roomColors}
               selectedDate={selectedDate}
               onSelectDate={selectDate}
               onAddOnDate={openCreateOnDate}
-              onPrevMonth={() => setMonthAnchor((m) => addMonths(m, -1))}
-              onNextMonth={() => setMonthAnchor((m) => addMonths(m, 1))}
+              onPrev={goPrev}
+              onNext={goNext}
               onToday={goToday}
+              onViewChange={setView}
             />
           </section>
           <aside className="home-layout__panel">
@@ -94,6 +139,7 @@ export default function HomeScreen() {
               onAdd={openCreate}
               onEdit={openEdit}
             />
+            <MemoPanel />
           </aside>
         </div>
       )}

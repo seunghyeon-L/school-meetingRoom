@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { AppHeader } from './AppHeader';
-import { SiteFooter } from './SiteFooter';
 
 interface ScreenProps {
   /** 본문 상단 작은 제목(선택) */
@@ -10,13 +9,12 @@ interface ScreenProps {
   heroTitle?: string;
   heroSub?: string;
   showHeader?: boolean;
-  showFooter?: boolean;
   children: ReactNode;
 }
 
 /**
- * 페이지 셸 (HP 밴드 구조):
- *  헤더(유틸바+톱내비) → 히어로(흰) → 본문(구름) → 푸터(잉크)
+ * 페이지 셸: 헤더(톱내비) → 히어로(선택) → 본문.
+ * 하단 푸터는 공간 절약을 위해 제거했다.
  */
 export function Screen({
   title,
@@ -24,7 +22,6 @@ export function Screen({
   heroTitle,
   heroSub,
   showHeader = true,
-  showFooter = true,
   children,
 }: ScreenProps) {
   return (
@@ -51,7 +48,6 @@ export function Screen({
           </div>
         </div>
       </main>
-      {showFooter && <SiteFooter />}
     </>
   );
 }

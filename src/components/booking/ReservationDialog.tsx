@@ -10,7 +10,6 @@ import { BigButton } from '../ui/BigButton';
 import { DatePicker } from '../ui/DatePicker';
 import { CalendarPanel } from '../ui/CalendarPanel';
 import { TimeListPanel } from '../ui/TimeListPanel';
-import { useAuth } from '../../context/AuthProvider';
 import { useSession } from '../../hooks/useSession';
 import {
   checkConflict,
@@ -71,7 +70,6 @@ export function ReservationDialog({
   onClose,
   onSaved,
 }: ReservationDialogProps) {
-  const { uid } = useAuth();
   const { user } = useSession();
   const isEdit = reservation !== null;
 
@@ -311,8 +309,8 @@ export function ReservationDialog({
   };
 
   const persistCreate = async (datesToBook: string[]) => {
-    if (!uid || !user) {
-      setErrorMsg('로그인 정보를 확인할 수 없습니다.');
+    if (!user) {
+      setErrorMsg('조교 이름을 먼저 선택해 주세요.');
       return;
     }
     if (datesToBook.length === 0) {
@@ -331,7 +329,7 @@ export function ReservationDialog({
         startLabel: slotToLabel(effStart),
         endLabel: slotToLabel(effEnd),
         bookedFor: bookedFor.trim(),
-        createdByUid: uid,
+        createdByUid: user.id,
         createdByName: user.name,
       };
       const inputs: ReservationInput[] = datesToBook.map((d) => {

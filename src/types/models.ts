@@ -1,5 +1,3 @@
-import type { Timestamp } from 'firebase/firestore';
-
 export interface Room {
   id: string;
   name: string;
@@ -34,15 +32,29 @@ export interface Reservation {
   purpose?: string;
   /** 다일/반복 예약을 묶는 그룹 id (단건이면 없음) */
   groupId?: string | null;
-  /** 예약을 등록한 조교 */
+  /** 예약을 등록한 조교 (id) */
   createdByUid: string;
   createdByName: string;
-  createdAt?: Timestamp | null;
-  updatedAt?: Timestamp | null;
+  /** PocketBase 가 자동으로 넣는 생성/수정 시각 (ISO 문자열) */
+  created?: string;
+  updated?: string;
 }
 
-/** Firestore 에 쓰기 위한 예약 입력값 (id/timestamps 제외) */
-export type ReservationInput = Omit<
-  Reservation,
-  'id' | 'createdAt' | 'updatedAt'
->;
+/** PocketBase 에 쓰기 위한 예약 입력값 (id/created/updated 제외) */
+export type ReservationInput = Omit<Reservation, 'id' | 'created' | 'updated'>;
+
+/** 조교 공유 메모(사이드바). 작성자/시간과 함께 목록으로 쌓인다. */
+export interface Memo {
+  id: string;
+  /** 메모 본문(자유 입력) */
+  text: string;
+  /** 작성한 조교 id (assistants 명단의 id) */
+  authorId: string;
+  /** 작성한 조교 이름(표시용 스냅샷) */
+  authorName: string;
+  /** PocketBase 가 자동으로 넣는 생성 시각 (ISO 문자열) */
+  created?: string;
+}
+
+/** PocketBase 에 쓰기 위한 메모 입력값 (id/created 제외) */
+export type MemoInput = Omit<Memo, 'id' | 'created'>;

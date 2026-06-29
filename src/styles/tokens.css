@@ -45,15 +45,16 @@
     BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo',
     'Noto Sans KR', system-ui, sans-serif;
 
-  --font-xs: 12px; /* caption-sm: 각주/법적 고지 */
-  --font-sm: 14px; /* caption-md: 스펙/메타/캡션 */
-  --font-base: 16px; /* body-md: 기본 본문(워크호스) */
-  --font-md: 18px; /* body-lg: 리드 문단 */
-  --font-lg: 20px; /* display-xs: UI 제목 */
-  --font-xl: 24px; /* display-sm: 카드/섹션 제목 */
-  --font-2xl: 32px; /* display-md: 페이지 H1 */
-  --font-3xl: 44px; /* display-lg: 히어로(태블릿) */
-  --font-display: 56px; /* display-xl: 히어로(데스크톱) */
+  /* 전체적으로 +2px (가독성 향상) */
+  --font-xs: 14px; /* caption-sm: 각주/법적 고지 */
+  --font-sm: 16px; /* caption-md: 스펙/메타/캡션 */
+  --font-base: 18px; /* body-md: 기본 본문(워크호스) */
+  --font-md: 20px; /* body-lg: 리드 문단 */
+  --font-lg: 22px; /* display-xs: UI 제목 */
+  --font-xl: 26px; /* display-sm: 카드/섹션 제목 */
+  --font-2xl: 34px; /* display-md: 페이지 H1 */
+  --font-3xl: 46px; /* display-lg: 히어로(태블릿) */
+  --font-display: 58px; /* display-xl: 히어로(데스크톱) */
 
   /* HP: 모든 디스플레이 사이즈를 weight 500로 — 히어로에서도 굵게 키우지 않음 */
   --weight-display: 500;
@@ -87,6 +88,6 @@
   /* ── 크기 ── */
   --tap-min: 44px; /* HP 터치 타깃(44×44) */
   --content-max: 1680px; /* 데스크톱 콘텐츠 최대폭 — 풀블리드에 가깝게 넓힘 */
-  --page-gutter: 16px; /* 좌우 사이드 여백(작게) — 여기 한 곳에서 조절 */
+  --page-gutter: 8px; /* 좌우 사이드 여백(작게) — 여기 한 곳에서 조절 */
   --maxw: 1366px; /* 레거시 참조 호환 */
 }
