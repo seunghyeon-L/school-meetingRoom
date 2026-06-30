@@ -30,6 +30,8 @@ export default function HomeScreen() {
   /** 포커스 날짜 — 월/2주 범위 계산의 기준 */
   const [anchor, setAnchor] = useState(today);
   const [selectedDate, setSelectedDate] = useState(today);
+  /** 방 필터 (null = 전체). 선택 시 그 방 예약만 보임 */
+  const [roomFilter, setRoomFilter] = useState<string | null>(null);
 
   const { rooms, loading: roomsLoading, error: roomsError } = useRooms();
 
@@ -102,7 +104,9 @@ export default function HomeScreen() {
     setDialogOpen(true);
   };
 
-  const dayReservations = byDate[selectedDate] ?? [];
+  const dayReservations = (byDate[selectedDate] ?? []).filter(
+    (r) => roomFilter === null || r.roomId === roomFilter,
+  );
 
   return (
     <Screen>
@@ -128,6 +132,8 @@ export default function HomeScreen() {
               onNext={goNext}
               onToday={goToday}
               onViewChange={setView}
+              roomFilter={roomFilter}
+              onRoomFilterChange={setRoomFilter}
             />
           </section>
           <aside className="home-layout__panel">

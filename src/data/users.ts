@@ -22,3 +22,32 @@ export function subscribeUsers(
     unsub.then((fn) => fn()).catch(() => {});
   };
 }
+
+// ── 관리 화면용 (조교 추가/수정/삭제) ──
+
+export interface AssistantInput {
+  name: string;
+  title: string;
+  order: number;
+  active: boolean;
+}
+
+/** 모든 조교(비활성 포함)을 order 순으로 — 관리 화면용 */
+export async function getAllAssistants(): Promise<User[]> {
+  return pb.collection('assistants').getFullList<User>({ sort: 'order' });
+}
+
+export async function createAssistant(input: AssistantInput): Promise<void> {
+  await pb.collection('assistants').create(input);
+}
+
+export async function updateAssistant(
+  id: string,
+  patch: Partial<AssistantInput>,
+): Promise<void> {
+  await pb.collection('assistants').update(id, patch);
+}
+
+export async function deleteAssistant(id: string): Promise<void> {
+  await pb.collection('assistants').delete(id);
+}

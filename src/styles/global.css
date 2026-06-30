@@ -1280,6 +1280,172 @@ a {
   line-height: 1.5;
 }
 
+/* 달력 방 필터 바 (전체 · 419 · 420 …) */
+.cal__roomfilter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-sm);
+}
+
+.cal__roomfilter-label {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-right: 2px;
+}
+
+.cal__roomfilter button {
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.cal__roomfilter button:hover {
+  background: var(--color-primary-light);
+}
+
+.cal__roomfilter button.is-active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+/* 관리 모달 (방 · 조교) */
+.manage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: min(620px, 86vw);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.manage__err {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--font-sm);
+}
+
+.manage__section {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+}
+
+.manage__h {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--font-base);
+  font-weight: 700;
+}
+
+.manage__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.manage__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.manage__in {
+  padding: 6px 8px;
+  font-family: inherit;
+  font-size: var(--font-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.manage__in--name {
+  flex: 1 1 90px;
+}
+
+.manage__in--title {
+  flex: 0 1 100px;
+}
+
+.manage__in--order {
+  width: 60px;
+  flex: none;
+}
+
+.manage__chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-sm);
+  white-space: nowrap;
+}
+
+.manage__save {
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.manage__save:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.manage__del {
+  padding: 6px 9px;
+  font-size: var(--font-base);
+  line-height: 1;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.manage__del:hover {
+  background: var(--color-danger);
+}
+
+.manage__add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--color-border);
+}
+
+.manage__add .manage__in {
+  flex: 1 1 auto;
+}
+
+.manage__empty {
+  margin: 4px 0;
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+}
+
+.manage__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* 큰 커스텀 날짜 선택기 (예약 창 안에서 인라인으로 펼쳐지는 달력) */
 .datepicker {
   position: relative;

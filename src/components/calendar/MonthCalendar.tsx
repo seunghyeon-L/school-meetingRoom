@@ -25,6 +25,9 @@ interface MonthCalendarProps {
   onNext: () => void;
   onToday: () => void;
   onViewChange: (v: CalendarView) => void;
+  /** 방 필터 (null = 전체). 선택 시 그 방 예약만 표시 */
+  roomFilter: string | null;
+  onRoomFilterChange: (roomId: string | null) => void;
 }
 
 /** '419호' -> '419' (칩 공간 절약용 짧은 방 이름) */
@@ -47,6 +50,8 @@ export function MonthCalendar({
   onNext,
   onToday,
   onViewChange,
+  roomFilter,
+  onRoomFilterChange,
 }: MonthCalendarProps) {
   const roomName = useMemo(() => {
     const m = new Map<string, string>();
@@ -107,6 +112,27 @@ export function MonthCalendar({
         </button>
       </div>
 
+      <div className="cal__roomfilter" role="group" aria-label="방 필터">
+        <span className="cal__roomfilter-label">방:</span>
+        <button
+          type="button"
+          className={roomFilter === null ? 'is-active' : ''}
+          onClick={() => onRoomFilterChange(null)}
+        >
+          전체
+        </button>
+        {rooms.map((r) => (
+          <button
+            key={r.id}
+            type="button"
+            className={roomFilter === r.id ? 'is-active' : ''}
+            onClick={() => onRoomFilterChange(r.id)}
+          >
+            {shortRoom(r.name)}
+          </button>
+        ))}
+      </div>
+
       <div className="cal__weekdays">
         {WEEKDAY_LABELS_SUN.map((w, i) => (
           <div
@@ -128,7 +154,11 @@ export function MonthCalendar({
         {days.map((day) => {
           const dow = sundayIndex(day);
           const inMonth = dimMonth ? isSameMonth(day, dimMonth) : true;
-          const dayResv = sortByRoom(byDate[day] ?? []);
+          const dayResv = sortByRoom(
+            (byDate[day] ?? []).filter(
+              (r) => roomFilter === null || r.roomId === roomFilter,
+            ),
+          );
           const cellCls = [
             'cal__cell',
             !inMonth ? 'cal__cell--other' : '',

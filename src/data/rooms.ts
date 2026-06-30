@@ -23,3 +23,31 @@ export function subscribeRooms(
     unsub.then((fn) => fn()).catch(() => {});
   };
 }
+
+// ── 관리 화면용 (방 추가/수정/삭제) ──
+
+export interface RoomInput {
+  name: string;
+  order: number;
+  active: boolean;
+}
+
+/** 모든 방(비활성 포함)을 order 순으로 — 관리 화면용 */
+export async function getAllRooms(): Promise<Room[]> {
+  return pb.collection('rooms').getFullList<Room>({ sort: 'order' });
+}
+
+export async function createRoom(input: RoomInput): Promise<void> {
+  await pb.collection('rooms').create(input);
+}
+
+export async function updateRoom(
+  id: string,
+  patch: Partial<RoomInput>,
+): Promise<void> {
+  await pb.collection('rooms').update(id, patch);
+}
+
+export async function deleteRoom(id: string): Promise<void> {
+  await pb.collection('rooms').delete(id);
+}

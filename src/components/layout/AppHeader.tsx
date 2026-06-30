@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSession } from '../../hooks/useSession';
 import { NamePickerModal } from '../booking/NamePickerModal';
+import { ManageDialog } from '../manage/ManageDialog';
 import type { User } from '../../types/models';
 
 /**
@@ -11,6 +12,7 @@ import type { User } from '../../types/models';
 export function AppHeader() {
   const { user } = useSession();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
 
   const handleSelect = (_u: User) => {
     setPickerOpen(false);
@@ -43,6 +45,12 @@ export function AppHeader() {
             )}
             <button
               className="topnav__namebtn"
+              onClick={() => setManageOpen(true)}
+            >
+              ⚙ 관리
+            </button>
+            <button
+              className="topnav__namebtn"
               onClick={() => setPickerOpen(true)}
             >
               {user ? '이름 바꾸기' : '이름 선택'}
@@ -56,6 +64,8 @@ export function AppHeader() {
         onClose={() => setPickerOpen(false)}
         onSelect={handleSelect}
       />
+
+      <ManageDialog open={manageOpen} onClose={() => setManageOpen(false)} />
     </>
   );
 }
