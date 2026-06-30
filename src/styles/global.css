@@ -738,6 +738,10 @@ a {
   padding: var(--space-lg);
 }
 
+.modal--wide {
+  max-width: 760px;
+}
+
 .modal__title {
   font-size: var(--font-lg);
   font-weight: 700;
@@ -1323,9 +1327,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  min-width: min(620px, 86vw);
-  max-height: 70vh;
-  overflow-y: auto;
+  /* 폭은 모달(.modal--wide)에 맞춤. 세로 스크롤은 .modal 이 담당 → 가로 스크롤 없음 */
 }
 
 .manage__err {

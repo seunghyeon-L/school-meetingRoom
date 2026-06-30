@@ -55,7 +55,7 @@ export function ManageDialog({ open, onClose }: ManageDialogProps) {
   const nextAsstOrder = assistants.reduce((m, a) => Math.max(m, a.order), 0) + 1;
 
   return (
-    <Modal open={open} title="관리 (방 · 조교)" onClose={onClose}>
+    <Modal open={open} title="관리 (방 · 조교)" onClose={onClose} wide>
       <div className="manage">
         {err && <p className="manage__err">{err}</p>}
         {loading && <p className="manage__empty">불러오는 중…</p>}
