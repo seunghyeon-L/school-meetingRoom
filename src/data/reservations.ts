@@ -16,9 +16,13 @@ export function subscribeReservationsByRange(
           start: startDate,
           end: endDate,
         }),
+        requestKey: null,
       })
       .then(onData)
-      .catch(onError);
+      .catch((err) => {
+        if (err?.isAbort) return; // 중복 요청 자동취소는 무시
+        onError(err);
+      });
   };
 
   load();
@@ -49,6 +53,7 @@ export async function checkConflict(
 ): Promise<Reservation[]> {
   const rows = await pb.collection('reservations').getFullList<Reservation>({
     filter: pb.filter('roomId = {:roomId} && date = {:date}', { roomId, date }),
+    requestKey: null,
   });
   return findConflicts(rows, startSlot, endSlot, excludeId);
 }
@@ -74,6 +79,7 @@ export async function findConflictsAcrossDates(
   for (const date of dates) {
     let rows = await pb.collection('reservations').getFullList<Reservation>({
       filter: pb.filter('roomId = {:roomId} && date = {:date}', { roomId, date }),
+      requestKey: null,
     });
     if (excludeGroupId) {
       rows = rows.filter((r) => r.groupId !== excludeGroupId);
@@ -119,6 +125,7 @@ export async function deleteReservation(id: string): Promise<void> {
 export async function deleteReservationGroup(groupId: string): Promise<void> {
   const rows = await pb.collection('reservations').getFullList<Reservation>({
     filter: pb.filter('groupId = {:groupId}', { groupId }),
+    requestKey: null,
   });
   for (const r of rows) {
     await pb.collection('reservations').delete(r.id);

@@ -8,10 +8,14 @@ export function subscribeUsers(
 ): () => void {
   const load = () => {
     // 조교 명단은 'assistants' 컬렉션 (PocketBase 기본 'users' 와 구분하려고 이름을 다르게 씀)
+    // requestKey: null → 동시 중복 요청 자동취소 끔
     pb.collection('assistants')
-      .getFullList<User>({ filter: 'active = true', sort: 'order' })
+      .getFullList<User>({ filter: 'active = true', sort: 'order', requestKey: null })
       .then(onData)
-      .catch(onError);
+      .catch((err) => {
+        if (err?.isAbort) return; // 자동취소는 무시
+        onError(err);
+      });
   };
 
   load();
@@ -34,7 +38,9 @@ export interface AssistantInput {
 
 /** 모든 조교(비활성 포함)을 order 순으로 — 관리 화면용 */
 export async function getAllAssistants(): Promise<User[]> {
-  return pb.collection('assistants').getFullList<User>({ sort: 'order' });
+  return pb
+    .collection('assistants')
+    .getFullList<User>({ sort: 'order', requestKey: null });
 }
 
 export async function createAssistant(input: AssistantInput): Promise<void> {

@@ -8,9 +8,13 @@ export function subscribeRooms(
 ): () => void {
   const load = () => {
     pb.collection('rooms')
-      .getFullList<Room>({ filter: 'active = true', sort: 'order' })
+      // requestKey: null → 동시 중복 요청 자동취소 끔(관리창 새로고침 + 실시간 구독 충돌 방지)
+      .getFullList<Room>({ filter: 'active = true', sort: 'order', requestKey: null })
       .then(onData)
-      .catch(onError);
+      .catch((err) => {
+        if (err?.isAbort) return; // 자동취소는 에러 아님 → 무시
+        onError(err);
+      });
   };
 
   load(); // 처음 한 번 불러오기
@@ -34,7 +38,9 @@ export interface RoomInput {
 
 /** 모든 방(비활성 포함)을 order 순으로 — 관리 화면용 */
 export async function getAllRooms(): Promise<Room[]> {
-  return pb.collection('rooms').getFullList<Room>({ sort: 'order' });
+  return pb
+    .collection('rooms')
+    .getFullList<Room>({ sort: 'order', requestKey: null });
 }
 
 export async function createRoom(input: RoomInput): Promise<void> {
